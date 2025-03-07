@@ -15,10 +15,15 @@ export const pondInputsSlice = createSlice(
             outerWidth: null,
             sl2nwl: 6,
             safetyLedge: 5,
-            ledgeWidth: 3
+            ledgeWidth: 3,
+            pondPositionZOffset: null
         },
         reducers:
         {
+            setPondPositionZOffset: (state, action) =>
+            {
+                state.pondPositionZOffset = action.payload;
+            },
             setDesignVolume: (state, action) =>
             {
                 state.designVolume = action.payload.designVolume;
@@ -63,5 +68,5 @@ export const pondInputsSlice = createSlice(
         }
     });
 
-export const {setDesignVolume, setNwl2hwl, setInteriorSlope, setBermWidth, setDaylightSlope, setHwl2fb, setOuterDimensions, setSl2nwl, setSafetyLedge, setLedgeWidth} = pondInputsSlice.actions;
+export const {setPondPositionZOffset, setDesignVolume, setNwl2hwl, setInteriorSlope, setBermWidth, setDaylightSlope, setHwl2fb, setOuterDimensions, setSl2nwl, setSafetyLedge, setLedgeWidth} = pondInputsSlice.actions;
 export default pondInputsSlice.reducer;

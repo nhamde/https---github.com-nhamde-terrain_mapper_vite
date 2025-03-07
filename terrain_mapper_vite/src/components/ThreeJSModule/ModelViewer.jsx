@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { createTerrain } from "./Terrain";
 import { createPondMesh } from "./PondModel";
 import { updatePondMesh } from "./PondUpdater";
+import { setPondPositionZOffset } from '../../store/slices/PondInputsSlice';
+import {useDispatch} from 'react-redux';
 
 const ModelViewer = () => 
 {
@@ -12,6 +14,7 @@ const ModelViewer = () =>
     const elevation = useSelector((state) => state.elevationDataSetter);
     const planeSize = useSelector((state) => state.planeSizeSetter);
     const pondInputs = useSelector((state) => state.PondInputsSetter);
+    const dispatch = useDispatch();
 
     useEffect(() => 
     {
@@ -27,12 +30,6 @@ const ModelViewer = () =>
         let terrainMesh = createTerrain(elevation, planeSize);
         let pondMesh = null;
 
-        // Convert Terrain to Non-Indexed BufferGeometry
-        if (terrainMesh.geometry.index) 
-        {
-            terrainMesh.geometry = terrainMesh.geometry.toNonIndexed();
-        }
-
         // Create Pond Mesh
         if (pondInputs.outerLength) 
         {
@@ -41,11 +38,7 @@ const ModelViewer = () =>
             {
                 pondMesh = updatePondMesh(pondInputs, pondMesh, terrainMesh);
                 pondMesh.rotation.x = -Math.PI / 2;
-            }
-            // Convert Pond to Non-Indexed BufferGeometry
-            if (pondMesh.geometry.index)
-            {
-                pondMesh.geometry = pondMesh.geometry.toNonIndexed();
+                dispatch(setPondPositionZOffset(10));
             }
         }
 
@@ -55,7 +48,7 @@ const ModelViewer = () =>
             scene.add(terrainMesh);
             scene.add(pondMesh);
         }
-        else if (terrainMesh) 
+        else if (terrainMesh)
         {
             // Add terrain if pond doesn't exist
             scene.add(terrainMesh);

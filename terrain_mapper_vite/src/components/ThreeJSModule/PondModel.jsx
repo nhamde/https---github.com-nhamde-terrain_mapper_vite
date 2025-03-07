@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {createBlock, createFace} from './ThreeJsModelMaker';
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils";
 
+// Merges multiple geometries into a single geometry
 const mergeGroupIntoSingleGeometry = (group, geometriesArray = []) => 
 {
     group.traverse((child) => 
@@ -20,7 +21,7 @@ const mergeGroupIntoSingleGeometry = (group, geometriesArray = []) =>
 };
 
 
-// Create a pond Mesh based on the inputs
+// Create a pond Mesh based on the inputs and does not include daylight slope
 export const createPondMesh = (pondInputs) => 
 {
     const {
@@ -32,11 +33,12 @@ export const createPondMesh = (pondInputs) =>
         interiorSlope,
         ledgeWidth,
         outerWidth,
-        outerLength
+        outerLength,
+        pondPositionZOffset
     } = pondInputs;
 
     // Calculate pond structure
-    const totalHeight = safetyLedge + nwl2hwl + sl2nwl + hwl2fb - 10;
+    const totalHeight = safetyLedge + nwl2hwl + sl2nwl + hwl2fb - pondPositionZOffset;
     const fbLength = outerLength - 2 * bermWidth;
     const fbWidth = outerWidth - 2 * bermWidth;
     
@@ -100,11 +102,6 @@ export const createPondMesh = (pondInputs) =>
         new THREE.Vector3(outerLength / 2, outerWidth / 2, totalHeight),
         new THREE.Vector3(-outerLength / 2, outerWidth / 2, totalHeight)
     ];
-
-    const frontEdgeMidPt = new THREE.Vector3((bermVertices[0].x + bermVertices[1].x)/2, (bermVertices[0].y + bermVertices[1].y)/2, totalHeight);
-    const rightEdgeMidPt = new THREE.Vector3((bermVertices[1].x + bermVertices[2].x)/2, (bermVertices[1].y + bermVertices[2].y)/2, totalHeight);
-    const backEdgeMidPt = new THREE.Vector3((bermVertices[2].x + bermVertices[3].x)/2, (bermVertices[2].y + bermVertices[3].y)/2, totalHeight);
-    const leftEdgeMidPt = new THREE.Vector3((bermVertices[3].x + bermVertices[0].x)/2, (bermVertices[3].y + bermVertices[0].y)/2, totalHeight);
 
     // A block consists of four side faces of the trapezoidal pond structure
     const hwlBlock = createBlock(fbVertices[0], fbVertices[1], hwlVertices[1], hwlVertices[0], fbVertices[3], fbVertices[2], hwlVertices[2], hwlVertices[3], 0xe4a5d0);

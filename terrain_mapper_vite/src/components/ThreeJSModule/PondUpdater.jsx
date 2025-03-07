@@ -70,11 +70,12 @@ export const updatePondMesh = (pondInputs, pondMesh, terrainMesh) =>
         hwl2fb,
         daylightSlope,
         outerWidth,
-        outerLength
+        outerLength,
+        pondPositionZOffset
     } = pondInputs;
 
     // Calculate pond structure
-    const totalHeight = safetyLedge + nwl2hwl + sl2nwl + hwl2fb - 10;
+    const totalHeight = safetyLedge + nwl2hwl + sl2nwl + hwl2fb - pondPositionZOffset;
     const bermVertices = [
         new THREE.Vector3(-outerLength / 2, -outerWidth / 2, totalHeight),
         new THREE.Vector3(outerLength / 2, -outerWidth / 2, totalHeight),
