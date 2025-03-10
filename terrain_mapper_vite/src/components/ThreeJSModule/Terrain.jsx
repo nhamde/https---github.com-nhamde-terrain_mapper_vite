@@ -1,7 +1,6 @@
-import * as THREE from "three";
-import { createTerrainVerticesIndices } from "./TerrainVerticesIndicesCreator";
+import * as THREE from 'three';
+import { createTerrainVerticesIndices } from './TerrainVerticesIndicesCreator.js';
 
-// Create Terrain Mesh
 export const createTerrain = (elevation, planeSize) => 
 {
     if (!elevation.elevationData) return null;
@@ -16,7 +15,6 @@ export const createTerrain = (elevation, planeSize) =>
         return null;
     }
 
-    // Create PlaneGeometry
     const geometry = new THREE.PlaneGeometry(width, height, gridX - 1, gridY - 1);
     const vertices = geometry.attributes.position.array;
 
@@ -31,11 +29,11 @@ export const createTerrain = (elevation, planeSize) =>
             const elevationValue = elevationData[elevationIndex] || 0; 
 
             const vertexIndex = (y * gridX + x) * 3;
-            vertices[vertexIndex + 2] = elevationValue; // Set elevation (Z)
+            vertices[vertexIndex + 2] = elevationValue;
 
-            sumX += vertices[vertexIndex];     // X
-            sumY += vertices[vertexIndex + 1]; // Y
-            sumZ += vertices[vertexIndex + 2]; // Z
+            sumX += vertices[vertexIndex];
+            sumY += vertices[vertexIndex + 1];
+            sumZ += vertices[vertexIndex + 2];
             numVertices++;
         }
     } 
@@ -44,19 +42,26 @@ export const createTerrain = (elevation, planeSize) =>
     const avgY = sumY / numVertices;
     const avgZ = sumZ / numVertices;
 
-    const minZ = 300;
-    const { finalVertices, finalIndices } = createTerrainVerticesIndices(vertices, minZ, gridX, gridY);
+    const minZ = 380;
+    const terrainData = createTerrainVerticesIndices(vertices, minZ, gridX, gridY);
 
-    const bufferGeometry = new THREE.BufferGeometry();
-    bufferGeometry.setIndex(finalIndices);
-    bufferGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(finalVertices), 3));
-    bufferGeometry.translate(-avgX, -avgY, -avgZ);
-    bufferGeometry.computeVertexNormals();
+    const createMesh = (vertices, indices, color) => {
+        const bufferGeometry = new THREE.BufferGeometry();
+        bufferGeometry.setIndex(indices);
+        bufferGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
+        bufferGeometry.translate(-avgX, -avgY, -avgZ);
+        bufferGeometry.computeVertexNormals();
+        
+        const material = new THREE.MeshStandardMaterial({ color, side: THREE.DoubleSide, wireframe: false });
+        return new THREE.Mesh(bufferGeometry, material);
+    };
 
-    const material = new THREE.MeshStandardMaterial({ color: 0x88cc88, roughness: 0.5, side: THREE.DoubleSide });
-
-    const terrainMesh = new THREE.Mesh(bufferGeometry, material);
-    terrainMesh.rotation.x = -Math.PI / 2;
-
-    return terrainMesh;
+    return {
+        top: createMesh(terrainData.top.vertices, terrainData.top.indices, 0xaaaaaa),
+        base: createMesh(terrainData.base.vertices, terrainData.base.indices, 0x888888),
+        front: createMesh(terrainData.front.vertices, terrainData.front.indices, 0x777777),
+        back: createMesh(terrainData.back.vertices, terrainData.back.indices, 0x666666),
+        left: createMesh(terrainData.left.vertices, terrainData.left.indices, 0x555555),
+        right: createMesh(terrainData.right.vertices, terrainData.right.indices, 0x444444)
+    };
 };

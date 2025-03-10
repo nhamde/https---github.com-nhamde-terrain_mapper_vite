@@ -27,10 +27,14 @@ const ModelViewer = () =>
         mountRef.current.appendChild(renderer.domElement);
 
         // Create Terrain Mesh
-        let terrainMesh = createTerrain(elevation, planeSize);
-        let pondMesh = null;
+        let { top, base, front, back, left, right } = createTerrain(elevation, planeSize);
+        const terrainFacesGroup = new THREE.Group(); // Grouping meshes
+        terrainFacesGroup.add(top, base, front, back, left, right);
+        terrainFacesGroup.rotation.x = -Math.PI/2;
+        const terrainMesh = terrainFacesGroup;
 
         // Create Pond Mesh
+        let pondMesh = null;
         if (pondInputs.outerLength) 
         {
             pondMesh = createPondMesh(pondInputs);
@@ -42,7 +46,6 @@ const ModelViewer = () =>
             }
         }
 
-        // If both terrain and pond exist, compute result and remove terrain
         if (terrainMesh && pondMesh) 
         {
             scene.add(terrainMesh);
