@@ -1,68 +1,161 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.app-container 
+{
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    color: #fff;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+.left-container 
+{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 2px; /* Adds spacing between sections */
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.terrain-selector,
+.model-viewer 
+{
+    flex: 1;
+    min-height: 40%;
+    border: 2px solid #4CAF50;  /* Green border for consistency */
+    border-radius: 12px;        /* Rounded corners for smoother look */
+    box-shadow: none;           /* No shadow by default */
+    transition: box-shadow 0.3s ease, transform 0.2s ease;  /* Smooth effects */
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.model-viewer:hover 
+{
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.5);  /* Greenish glow shadow */
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+
+.threejs-viewer 
+{
+    width: 100%;
+    height: 100%;
+    border: 2px solid #4CAF50;
+    border-radius: 12px;
+    box-shadow: none;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.threejs-viewer:hover 
+{
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.5);
+}
+
+
+.parameters-container 
+{
+    flex: 2;
+    width: 400px;
+    border-left: 2px solid #444;
+    background: #111;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: -3px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.parameters-title 
+{
+    margin-bottom: 15px;
+    color: #4CAF50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 5px;
+}
+
+.input-container 
+{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-label 
+{
+    color: #ddd;
+    font-weight: 500;
+}
+
+.input-field 
+{
+    width: 100%;
+    padding: 10px 0;  /* Removed side padding for cleaner bottom-line look */
+    border: none;
+    border-bottom: 2px solid #666;  /* Default bottom border */
+    background-color: transparent;
+    color: #fff;
+    outline: none;  /* Removes default focus outline */
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-bottom 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-field:focus 
+{
+    border-bottom: 2px solid #fff;  /* White highlight on focus */
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.5);  /* Soft glow effect */
+}
+
+.input-field:hover 
+{
+    border-bottom: 2px solid #4CAF50;  /* Green color on hover */
+}
+
+
+.generate-btn 
+{
+    width: 100%;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.generate-btn:hover 
+{
+    background-color: #45a049;
+    transform: scale(1.02);
+}
+
+.generate-btn:active 
+{
+    transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) 
+{
+    .app-container 
+    {
+        flex-direction: column;
+    }
+
+    .left-container 
+    {
+        flex-direction: row;
+    }
+
+    .parameters-container 
+    {
+        width: 100%; /* Full width for small screens */
+        border-left: none;
+        border-top: 2px solid #444;
+    }
 }

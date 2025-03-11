@@ -6,7 +6,7 @@ import { createTerrain } from "./Terrain";
 import { createPondMesh } from "./PondModel";
 import { updatePondMesh } from "./PondUpdater";
 import { setPondPositionZOffset } from '../../store/slices/PondInputsSlice';
-import {useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const ModelViewer = () => 
 {
@@ -23,14 +23,15 @@ const ModelViewer = () =>
         // Scene and Renderer Setup
         const scene = new THREE.Scene();
         const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(500, 500);
+        renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio); // Improved clarity
         mountRef.current.appendChild(renderer.domElement);
 
         // Create Terrain Mesh
         let { top, base, front, back, left, right } = createTerrain(elevation, planeSize);
-        const terrainFacesGroup = new THREE.Group(); // Grouping meshes
+        const terrainFacesGroup = new THREE.Group();
         terrainFacesGroup.add(top, base, front, back, left, right);
-        terrainFacesGroup.rotation.x = -Math.PI/2;
+        terrainFacesGroup.rotation.x = -Math.PI / 2;
         const terrainMesh = terrainFacesGroup;
 
         // Create Pond Mesh
@@ -38,27 +39,16 @@ const ModelViewer = () =>
         if (pondInputs.outerLength) 
         {
             pondMesh = createPondMesh(pondInputs);
-            if (pondInputs.outerLength)
-            {
-                pondMesh = updatePondMesh(pondInputs, pondMesh, terrainMesh);
-                pondMesh.rotation.x = -Math.PI / 2;
-                dispatch(setPondPositionZOffset(10));
-            }
+            pondMesh = updatePondMesh(pondInputs, pondMesh, terrainMesh);
+            pondMesh.rotation.x = -Math.PI / 2;
+            dispatch(setPondPositionZOffset(10));
         }
 
-        if (terrainMesh && pondMesh) 
-        {
-            scene.add(terrainMesh);
-            scene.add(pondMesh);
-        }
-        else if (terrainMesh)
-        {
-            // Add terrain if pond doesn't exist
-            scene.add(terrainMesh);
-        }
+        if (terrainMesh) scene.add(terrainMesh);
+        if (pondMesh) scene.add(pondMesh);
 
         // Camera Setup
-        const camera = new THREE.PerspectiveCamera(60, 1, 1, 5000);
+        const camera = new THREE.PerspectiveCamera(60, mountRef.current.clientWidth / mountRef.current.clientHeight, 1, 5000);
         camera.position.set(0, 0, 450);
         camera.lookAt(0, 0, 0);
 
@@ -71,9 +61,9 @@ const ModelViewer = () =>
         directionalLight.castShadow = true;
         scene.add(directionalLight);
 
-        //axes
-        const axesHelper = new THREE.AxesHelper( 5 );
-        scene.add( axesHelper );
+        // Axes
+        const axesHelper = new THREE.AxesHelper(5);
+        scene.add(axesHelper);
 
         // OrbitControls
         const controls = new OrbitControls(camera, renderer.domElement);
@@ -85,6 +75,17 @@ const ModelViewer = () =>
         controls.enablePan = true;
         controls.target.set(0, 0, 0);
         controls.update();
+
+        // Resize Handler
+        const handleResize = () =>
+        {
+            const { clientWidth, clientHeight } = mountRef.current;
+            renderer.setSize(clientWidth, clientHeight);
+            camera.aspect = clientWidth / clientHeight;
+            camera.updateProjectionMatrix();
+        };
+
+        window.addEventListener('resize', handleResize);
 
         // Animation Loop
         const animate = () => 
@@ -98,13 +99,14 @@ const ModelViewer = () =>
         // Cleanup Function
         return () => 
         {
+            window.removeEventListener('resize', handleResize);
             mountRef.current.removeChild(renderer.domElement);
             scene.clear();
             renderer.dispose();
         };
     }, [elevation, planeSize, pondInputs]);
 
-    return <div ref={mountRef}></div>;
+    return <div ref={mountRef} className="threejs-viewer"></div>;
 };
 
 export default ModelViewer;
